@@ -47,14 +47,9 @@ RSpec.configure do |config|
 end
 
 def wait(time, increment = 5, elapsed_time = 0, &block)
-  begin
-    yield
-  rescue Exception => e
-    if elapsed_time >= time
-      raise e
-    else
-      sleep increment
-      wait(time, increment, elapsed_time + increment, &block)
-    end
-  end
+  yield
+rescue RSpec::Expectations::ExpectationNotMetError => e
+  raise e if elapsed_time >= time
+  sleep increment
+  wait(time, increment, elapsed_time + increment, &block)
 end

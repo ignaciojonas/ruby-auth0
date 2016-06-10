@@ -19,12 +19,11 @@ describe Auth0::Api::V2::Logs do
     client.delete_user(user['user_id'])
   end
 
-
   describe '.logs' do
     let(:logs) { client.logs }
     it 'is expected to get a log about user creation' do
-      wait 10 do
-          expect(find_create_user_log_by_email(user['email'])).to_not be_empty
+      wait 30 do
+        expect(find_create_user_log_by_email(user['email'])).to_not be_empty
       end
     end
 
@@ -62,10 +61,9 @@ describe Auth0::Api::V2::Logs do
   def find_create_user_log_by_email(email)
     logs = client.logs
     logs.find do |log|
-        log['description'] == 'Create a user' &&
+      log['description'] == 'Create a user' &&
         log['type'] == 'sapi' &&
         log['details']['request']['body']['email'] == email
     end
   end
-
 end
