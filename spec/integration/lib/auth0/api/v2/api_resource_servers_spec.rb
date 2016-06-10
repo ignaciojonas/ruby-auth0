@@ -4,7 +4,7 @@ describe Auth0::Api::V2::ResourceServers do
 
   before(:all) do
     @client = Auth0Client.new(v2_creds)
-    identifier = Faker::Lorem.word
+    identifier = SecureRandom.uuid
     @resource_server = client.create_resource_server(identifier)
   end
 
@@ -23,7 +23,7 @@ describe Auth0::Api::V2::ResourceServers do
 
   describe '.create_resource_server' do
     let(:name) { Faker::Lorem.word }
-    let(:identifier) { Faker::Lorem.word }
+    let(:identifier) { SecureRandom.uuid }
     let(:signing_alg) { 'HS256' }
     let(:signing_secret) { Faker::Lorem.characters(16) }
     let(:token_lifetime) { rand(1000..3000) }
