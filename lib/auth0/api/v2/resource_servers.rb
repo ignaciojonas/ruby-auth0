@@ -52,7 +52,7 @@ module Auth0
 
         # Resource Servers API path
         def resource_servers_path
-          @rules_path ||= '/api/v2/resource-servers'
+          @resource_servers_path ||= '/api/v2/resource-servers'
         end
       end
     end
