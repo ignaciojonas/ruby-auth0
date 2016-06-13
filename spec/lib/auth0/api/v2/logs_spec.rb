@@ -24,7 +24,7 @@ describe Auth0::Api::V2::Logs do
       expect { @instance.logs }.not_to raise_error
     end
     it 'is expect to rise an error when take is higher than 100' do
-      expect(@instance.logs(take: rand(101...1000))).to raise_error(
+      expect { @instance.logs(take: 200) }.to raise_error(
         'The total amount of entries should be less than 100')
     end
   end
@@ -36,5 +36,6 @@ describe Auth0::Api::V2::Logs do
       expect(@instance).to receive(:get).with('/api/v2/logs/LOG_ID')
       expect { @instance.log('LOG_ID') }.not_to raise_error
     end
+    it { expect { @instance.log(nil) }.to raise_error('Must supply a valid log_id') }
   end
 end
