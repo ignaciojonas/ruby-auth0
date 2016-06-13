@@ -32,6 +32,9 @@ module Auth0
             from: options.fetch(:from, nil),
             take: options.fetch(:take, nil)
           }
+          if request_params[:take].to_i > 100
+            fail Auth0::MissingParameter, 'The total amount of entries should be less than 100'
+          end
           get(logs_path, request_params)
         end
         alias get_logs logs
