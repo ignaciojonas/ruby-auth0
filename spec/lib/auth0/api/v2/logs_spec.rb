@@ -19,7 +19,8 @@ describe Auth0::Api::V2::Logs do
         include_fields: nil,
         include_totals: nil,
         from: nil,
-        take: nil)
+        take: nil
+      )
       expect { @instance.logs }.not_to raise_error
     end
   end
