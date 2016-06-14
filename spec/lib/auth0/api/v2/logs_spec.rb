@@ -24,8 +24,12 @@ describe Auth0::Api::V2::Logs do
       expect { @instance.logs }.not_to raise_error
     end
     it 'is expect to rise an error when take is higher than 100' do
-      expect { @instance.logs(take: 200) }.to raise_error(
-        'The total amount of entries should be less than 100')
+      expect { @instance.logs(take: rand(101..2000)) }.to raise_error(
+        'The total amount of entries to retrieve should be less than 100')
+    end
+    it 'is expect to rise an error when per_page is higher than 100' do
+      expect { @instance.logs(per_page: rand(101..2000)) }.to raise_error(
+        'The total amount of entries per page should be less than 100')
     end
   end
 
