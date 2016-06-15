@@ -45,11 +45,9 @@ describe Auth0::Api::V2::ClientGrants do
         )
       ).to(include('scope' => new_scope))
     end
-    it { expect { client.patch_client_grant('', 'scope' => scope) }.to raise_error(Auth0::MissingParameter) }
   end
 
   describe '.delete_client_grant' do
     it { expect { client.delete_client_grant(existing_grant['id']) }.to_not raise_error }
-    it { expect { client.delete_client_grant '' }.to raise_error(Auth0::MissingParameter) }
   end
 end

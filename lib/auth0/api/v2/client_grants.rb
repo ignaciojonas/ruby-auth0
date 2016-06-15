@@ -26,20 +26,20 @@ module Auth0
 
         # Deletes a client grant given its id.
         # @see https://auth0.com/docs/api/management/v2#!/client_grants/delete_client_grants_by_id
-        # @param client_id [string] The id of the client grant to delete
+        # @param client_id [string] The id of the client grant to delete.
         def delete_client_grant(client_grant_id)
-          raise Auth0::MissingParameter, 'Must specify a client grant id' if client_grant_id.to_s.empty?
+          raise Auth0::InvalidParameter, 'Must specify a client grant id' if client_grant_id.to_s.empty?
           path = "#{client_grants_path}/#{client_grant_id}"
           delete(path)
         end
 
         # Updates a client grant.
         # @see https://auth0.com/docs/api/management/v2#!/client_grants/patch_client_grants_by_id
-        # @param client_id [string] The id of the client grant to update
+        # @param client_id [string] The id of the client grant to update.
         # @param options [hash] The Hash options used to define the client grant's properties.
         def patch_client_grant(client_grant_id, options)
-          raise Auth0::MissingParameter, 'Must specify a client grant id' if client_grant_id.to_s.empty?
-          raise Auth0::MissingParameter, 'Must specify a valid body' if options.to_s.empty?
+          raise Auth0::InvalidParameter, 'Must specify a client grant id' if client_grant_id.to_s.empty?
+          raise Auth0::InvalidParameter, 'Must specify a valid body' if options.to_s.empty?
           path = "#{client_grants_path}/#{client_grant_id}"
           patch(path, options)
         end
