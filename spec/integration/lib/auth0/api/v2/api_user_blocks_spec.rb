@@ -17,7 +17,8 @@ describe Auth0::Api::V2::UserBlocks do
         client.login(email, 'invalid password')
       rescue Auth0::Unauthorized
         next
-      rescue Auth0::Unsupported
+      rescue Auth0::Unsupported => e
+        puts e.message
         break
       end
     end
@@ -29,11 +30,13 @@ describe Auth0::Api::V2::UserBlocks do
 
   describe '.user_blocks' do
     let(:user_blocks) { client.user_blocks(email) }
+    it { expect(user_blocks['blocked_for'].size).to be > 0 }
     it { expect(user_blocks['blocked_for'].first['identifier']).to eq email }
   end
 
   describe '.user_blocks_by_id' do
     let(:user_blocks) { client.user_blocks_by_id(user['user_id']) }
+    it { expect(user_blocks['blocked_for'].size).to be > 0 }
     it { expect(user_blocks['blocked_for'].first['identifier']).to eq email }
   end
 
