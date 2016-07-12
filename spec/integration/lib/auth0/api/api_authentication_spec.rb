@@ -111,9 +111,13 @@ describe Auth0::Api::AuthenticationEndpoints do
     it { expect(unlink_user).to eq 'OK' }
   end
 
-  skip '.user_info' do
-    let(:user_info) { global_client.user_info }
-    it { expect(user_info).to eq 'OK' }
+  describe '.user_info' do
+    let(:access_token) { global_client.login(impersonate_user['email'], password)['access_token'] }
+    let(:credentials) { { client_id: ENV['CLIENT_ID'], token: access_token, domain: ENV['DOMAIN'] } }
+    let(:client) { Auth0Client.new(credentials) }
+    let(:user_info) { client.user_info }
+    it { expect(user_info['email']).to eq impersonate_user['email'] }
+    it { expect(user_info).to(include('token_type', 'expires_in', 'id_token')) }
   end
 
   skip '.authorization_url' do
@@ -121,4 +125,10 @@ describe Auth0::Api::AuthenticationEndpoints do
     let(:authorization_url) { global_client.authorization_url(uri) }
     it { expect(get(authorization_url)).to eq 'OK' }
   end
+
+    describe '.logout_url' do
+      let(:redirect_url) { Faker::Internet.url }
+      let(:logout_url) { global_client.logout_url(redirect_url) }
+      it { expect(logout_url.to_s).to eq "https://#{ENV['DOMAIN']}/logout?returnTo=#{redirect_url}" }
+    end
 end
