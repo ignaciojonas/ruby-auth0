@@ -87,13 +87,6 @@ describe Auth0::Api::AuthenticationEndpoints do
     it { expect(token_info).to(include('email', 'clientID', 'global_client_id')) }
   end
 
-  skip '.refresh_delegation' do
-    let(:access_token) { global_client.login(impersonate_user['email'], password)['access_token'] }
-    let(:target) { global_client.clients[0]['clientID'] }
-    let(:refresh_delegation) { global_client.refresh_delegation(access_token, target) }
-    it { expect(refresh_delegation).to(include('email', 'clientID', 'global_client_id')) }
-  end
-
   describe '.delegation' do
     let(:id_token) { global_client.login(impersonate_user['email'], password)['id_token'] }
     let(:target) { global_client.clients[0]['clientID'] }
@@ -121,20 +114,5 @@ describe Auth0::Api::AuthenticationEndpoints do
     let(:user_info) { client.user_info }
     it { expect(user_info['email']).to eq impersonate_user['email'] }
     it { expect(user_info).to(include('clientID', 'identities', 'nickname', 'picture')) }
-  end
-
-  describe '.authorization_url' do
-    let(:redirect_url) { Faker::Internet.url }
-    let(:authorization_url) { global_client.authorization_url(redirect_url) }
-    it do
-      expect(authorization_url.to_s).to eq "https://#{ENV['DOMAIN']}/authorize?client_id=#{ENV['GLOBAL_CLIENT_ID']}"\
-      "&response_type=code&redirect_url=#{redirect_url}"
-    end
-  end
-
-  describe '.logout_url' do
-    let(:redirect_url) { Faker::Internet.url }
-    let(:logout_url) { global_client.logout_url(redirect_url) }
-    it { expect(logout_url.to_s).to eq "https://#{ENV['DOMAIN']}/logout?returnTo=#{redirect_url}" }
   end
 end
