@@ -3,7 +3,7 @@ describe Auth0::Api::AuthenticationEndpoints do
   attr_reader :client, :impersonate_user, :impersonator_user, :global_client, :password
 
   before(:all) do
-    client = Auth0Client.new(v2_creds)
+    @client = Auth0Client.new(v2_creds)
     impersonate_username = Faker::Internet.user_name
     impersonate_email = "#{entity_suffix}#{Faker::Internet.safe_email(impersonate_username)}"
     @password = Faker::Internet.password
@@ -46,6 +46,7 @@ describe Auth0::Api::AuthenticationEndpoints do
     let(:signup_email) { "#{entity_suffix}#{Faker::Internet.safe_email(signup_username)}" }
     let(:signup) { global_client.signup(signup_email, password) }
     it { expect(signup).to(include('_id', 'email')) }
+    it { expect(signup['email']).to eq signup_email }
   end
 
   describe '.change_password' do
@@ -59,13 +60,15 @@ describe Auth0::Api::AuthenticationEndpoints do
     let(:start_passwordless_email_flow) do
       global_client.start_passwordless_email_flow(impersonate_user['email'])
     end
-    it { expect(start_passwordless_email_flow).to eq '"We\'ve just sent you an email to reset your password."' }
+    it { expect(start_passwordless_email_flow['email']).to eq impersonate_user['email'] }
+    it { expect(start_passwordless_email_flow).to(include('_id', 'email')) }
   end
 
   skip '.start_passwordless_sms_flow' do
-    let(:phone_number) { '+123456778' }
+    let(:phone_number) { '+19143686854' }
     let(:start_passwordless_sms_flow) { global_client.start_passwordless_sms_flow(phone_number) }
-    it { expect(start_passwordless_sms_flow).to eq '"We\'ve just sent you an email to reset your password."' }
+    it { expect(start_passwordless_sms_flow['phone_number']).to eq phone_number }
+    it { expect(start_passwordless_sms_flow).to(include('_id', 'phone_number', 'request_language')) }
   end
 
   describe '.saml_metadata' do
@@ -117,18 +120,21 @@ describe Auth0::Api::AuthenticationEndpoints do
     let(:client) { Auth0Client.new(credentials) }
     let(:user_info) { client.user_info }
     it { expect(user_info['email']).to eq impersonate_user['email'] }
-    it { expect(user_info).to(include('token_type', 'expires_in', 'id_token')) }
+    it { expect(user_info).to(include('clientID', 'identities', 'nickname', 'picture')) }
   end
 
-  skip '.authorization_url' do
-    let(:uri) { 'new_uri' }
-    let(:authorization_url) { global_client.authorization_url(uri) }
-    it { expect(get(authorization_url)).to eq 'OK' }
-  end
-
-    describe '.logout_url' do
-      let(:redirect_url) { Faker::Internet.url }
-      let(:logout_url) { global_client.logout_url(redirect_url) }
-      it { expect(logout_url.to_s).to eq "https://#{ENV['DOMAIN']}/logout?returnTo=#{redirect_url}" }
+  describe '.authorization_url' do
+    let(:redirect_url) { Faker::Internet.url }
+    let(:authorization_url) { global_client.authorization_url(redirect_url) }
+    it do
+      expect(authorization_url.to_s).to eq "https://#{ENV['DOMAIN']}/authorize?client_id=#{ENV['GLOBAL_CLIENT_ID']}"\
+      "&response_type=code&redirect_url=#{redirect_url}"
     end
+  end
+
+  describe '.logout_url' do
+    let(:redirect_url) { Faker::Internet.url }
+    let(:logout_url) { global_client.logout_url(redirect_url) }
+    it { expect(logout_url.to_s).to eq "https://#{ENV['DOMAIN']}/logout?returnTo=#{redirect_url}" }
+  end
 end
