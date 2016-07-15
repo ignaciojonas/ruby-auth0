@@ -38,7 +38,9 @@ module Auth0
           connection:    connection,
           grant_type:    'authorization_code',
           code:          code,
-          redirect_uri:  redirect_uri }
+          scope:         scope,
+          redirect_uri:  redirect_uri
+        }
         post('/oauth/token', request_params)
       end
 
